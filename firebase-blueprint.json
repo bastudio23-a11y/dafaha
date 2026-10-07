@@ -1,0 +1,243 @@
+{
+  "entities": {
+    "game": {
+      "title": "Game Room",
+      "description": "Represents the real-time skill challenge game session and state",
+      "type": "object",
+      "properties": {
+        "phase": {
+          "type": "string",
+          "enum": ["lobby", "secret", "explain", "vote", "results"]
+        },
+        "round": {
+          "type": "number"
+        },
+        "names": {
+          "type": "array"
+        },
+        "avs": {
+          "type": "array"
+        },
+        "wins": {
+          "type": "array"
+        },
+        "cur": {
+          "type": "array"
+        },
+        "endsAt": {
+          "type": "number"
+        },
+        "tally": {
+          "type": "object"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "sc": {
+          "type": "array"
+        },
+        "win": {
+          "type": "number"
+        },
+        "durationSeconds": {
+          "type": "number"
+        },
+        "updatedAt": {
+          "type": "number"
+        }
+      },
+      "required": ["phase", "round", "updatedAt"]
+    },
+    "audience": {
+      "title": "Audience Member",
+      "description": "Represents an audience participant joined via phone",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "av": {
+          "type": "number"
+        },
+        "points": {
+          "type": "number"
+        },
+        "streak": {
+          "type": "number"
+        },
+        "correctGuesses": {
+          "type": "number"
+        },
+        "lastScore": {
+          "type": "number"
+        },
+        "t": {
+          "type": "number"
+        }
+      },
+      "required": ["id", "name"]
+    },
+    "player": {
+      "title": "Challenger",
+      "description": "Represents a right or left challenger",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "side": {
+          "type": "string",
+          "enum": ["r", "l"]
+        },
+        "av": {
+          "type": "number"
+        },
+        "t": {
+          "type": "number"
+        }
+      },
+      "required": ["id", "name", "side"]
+    },
+    "vote": {
+      "title": "Vote",
+      "description": "Real-time vote submitted by audience member",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string"
+        },
+        "round": {
+          "type": "number"
+        },
+        "a": {
+          "type": "number"
+        },
+        "b": {
+          "type": "number"
+        },
+        "updatedAt": {
+          "type": "number"
+        }
+      },
+      "required": ["uid", "round"]
+    },
+    "leaderboardEntry": {
+      "title": "Leaderboard Entry",
+      "description": "Kahoot-style rank and points entry",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "av": {
+          "type": "number"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["challenger", "audience"]
+        },
+        "points": {
+          "type": "number"
+        },
+        "wins": {
+          "type": "number"
+        },
+        "votesEarned": {
+          "type": "number"
+        },
+        "correctGuesses": {
+          "type": "number"
+        },
+        "streak": {
+          "type": "number"
+        },
+        "totalRounds": {
+          "type": "number"
+        }
+      },
+      "required": ["id", "name", "role", "points"]
+    },
+    "registration": {
+      "title": "Player Registration",
+      "description": "Represents a participant requesting entry into the room",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "av": {
+          "type": "number"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["challenger", "audience"]
+        },
+        "side": {
+          "type": "string",
+          "enum": ["r", "l", "auto"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "createdAt": {
+          "type": "number"
+        }
+      },
+      "required": ["id", "name", "role", "status"]
+    }
+  },
+  "firestore": {
+    "/games/{gameId}": {
+      "schema": {
+        "$ref": "#/entities/game"
+      },
+      "description": "Main game room state document"
+    },
+    "/games/{gameId}/audience/{audienceId}": {
+      "schema": {
+        "$ref": "#/entities/audience"
+      },
+      "description": "Audience players registered in room"
+    },
+    "/games/{gameId}/players/{playerId}": {
+      "schema": {
+        "$ref": "#/entities/player"
+      },
+      "description": "Challengers registered in room"
+    },
+    "/games/{gameId}/votes/{voteId}": {
+      "schema": {
+        "$ref": "#/entities/vote"
+      },
+      "description": "Votes submitted for the active round"
+    },
+    "/games/{gameId}/leaderboard/{entryId}": {
+      "schema": {
+        "$ref": "#/entities/leaderboardEntry"
+      },
+      "description": "Persistent leaderboard and scores"
+    },
+    "/games/{gameId}/registrations/{regId}": {
+      "schema": {
+        "$ref": "#/entities/registration"
+      },
+      "description": "Registration requests requiring admin approval"
+    }
+  }
+}

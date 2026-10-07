@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg: #f6fafb;
+    --card: #ffffff;
+    --tx: #0b0f2a;
+    --mut: #5d7a86;
+    --a: #4eaab8;
+    --b: #0b0f2a;
+    --ok: #1f9d73;
+    --bad: #e5484d;
+    --gold: #f2c14e;
+  }
+
+  .dark {
+    --bg: #0b0f2a;
+    --card: #151a40;
+    --tx: #f8fafc;
+    --mut: #9fc3cc;
+    --b: #e6f4f7;
+    --a: #4eaab8;
+  }
+}
+
+body {
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Ambient glow orbs */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 55vmax;
+  height: 55vmax;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.22;
+  z-index: -1;
+  pointer-events: none;
+  animation: floatOrb 16s ease-in-out infinite alternate;
+}
+
+body::before {
+  background: #4eaab8;
+  top: -25vmax;
+  right: -20vmax;
+}
+
+body::after {
+  background: #2fa3bf;
+  bottom: -25vmax;
+  left: -20vmax;
+  animation-delay: -8s;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(6vmax, 5vmax) scale(1.12);
+  }
+}
+
+@keyframes popEffect {
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+.animate-pop {
+  animation: popEffect 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
