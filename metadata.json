@@ -1,6 +1,6 @@
 {
-  "name": "تحدّي المهارة",
-  "description": "لعبة تفاعلية وتنافسية بين متحدّيين والجمهور مع تصويت حي وباركود للجوالات",
+  "name": "تحدي المهارة مع دفعة",
+  "description": "لعبة تفاعلية وتنافس بين المتحديين و الجمهور مع التصويت",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -62,7 +62,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           </div>
           <div className="flex flex-col text-right">
             <span className="font-black text-lg sm:text-xl tracking-tight bg-gradient-to-r from-[#122b64] via-[#2fa3bf] to-[#4eaab8] dark:from-[#9fd8e2] dark:to-white bg-clip-text text-transparent leading-none">
-              تحدّي المهارة
+              تحدي المهارة مع دفعة
             </span>
             <span className="text-[10px] font-extrabold text-[#48bce6] mt-0.5">
               دُفـعـة · Dafah

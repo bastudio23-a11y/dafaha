@@ -27,10 +27,10 @@ export const RolePicker: React.FC<RolePickerProps> = ({
       </div>
 
       <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-1.5 tracking-wide bg-gradient-to-r from-[#122b64] via-[#2fa3bf] to-[#4eaab8] dark:from-[#9fd8e2] dark:to-white bg-clip-text text-transparent drop-shadow-sm font-['Tajawal']">
-        تحــــدي المــهـــارة
+        تحــــدي المــهـــارة مع دُفــعـة
       </h1>
       <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">
-        لعبة تفاعلية وتنافسية بين متحدّيين والجمهور. اختر كيف تبي تشارك:
+        لعبة تفاعلية وتنافس بين المتحديين و الجمهور مع التصويت. اختر كيف تبي تشارك:
       </p>
 
       {/* Role Options */}
