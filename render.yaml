@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: dafahaa-game
+    name: dafaha
     runtime: node
     plan: free
     buildCommand: npm install && npm run build
