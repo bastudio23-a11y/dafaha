@@ -100,7 +100,7 @@ export const AudienceView: React.FC<AudienceViewProps> = ({
           انضم لتحدّي الجمهور!
         </h2>
         <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mb-4">
-          اكتب اسمك واجمع النقاط لتتصدر الترتيب مثل Kahoot! 🏆
+          اكتب اسمك واجمع النقاط لتتصدر الترتيب! 🏆
         </p>
 
         <form onSubmit={handleJoin} className="space-y-4">
