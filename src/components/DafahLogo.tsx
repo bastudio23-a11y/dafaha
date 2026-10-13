@@ -4,119 +4,190 @@ interface DafahLogoProps {
   size?: number;
   className?: string;
   variant?: 'full' | 'icon' | 'horizontal';
+  showBackground?: boolean;
 }
 
+/**
+ * Golden Owl Emblem Component (شعار البومة الذهبية)
+ * Faithfully matches the royal geometric gold owl crest.
+ */
 export const DafahLogo: React.FC<DafahLogoProps> = ({
   size = 48,
   className = '',
   variant = 'icon',
+  showBackground = false,
 }) => {
-  // If variant is 'icon' - renders the stylized aerodynamic 'D' symbol with pixel blocks
+  // Common SVG Owl Symbol
+  const renderOwlSvg = (svgSize: number) => (
+    <svg
+      width={svgSize}
+      height={svgSize}
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="shrink-0 select-none overflow-visible"
+    >
+      <defs>
+        {/* Luxurious Gold Metallic Gradient */}
+        <linearGradient id="owlGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#f7dc88" />
+          <stop offset="35%" stopColor="#d4af37" />
+          <stop offset="70%" stopColor="#b88b20" />
+          <stop offset="100%" stopColor="#dfba4e" />
+        </linearGradient>
+
+        {/* Soft Golden Glow Filter */}
+        <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1" stdDeviation="1.5" floodColor="#d4af37" floodOpacity="0.3" />
+        </filter>
+      </defs>
+
+      <g filter="url(#goldGlow)">
+        {/* 1. Outer Background Circle */}
+        <circle
+          cx="50"
+          cy="48"
+          r="36"
+          stroke="url(#owlGoldGrad)"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+        />
+
+        {/* 2. Head Circle (Circular Face Boundary) */}
+        <circle
+          cx="50"
+          cy="48"
+          r="19"
+          stroke="url(#owlGoldGrad)"
+          strokeWidth="3.2"
+        />
+
+        {/* 3. Outer Wings / Horns (Swooping crescent from ears down to bottom point) */}
+        {/* Left Wing / Ear */}
+        <path
+          d="M 27 34 C 20 46 22 62 50 78 C 36 65 31 50 27 34 Z"
+          stroke="url(#owlGoldGrad)"
+          strokeWidth="3.2"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          fill="none"
+        />
+
+        {/* Right Wing / Ear */}
+        <path
+          d="M 73 34 C 80 46 78 62 50 78 C 64 65 69 50 73 34 Z"
+          stroke="url(#owlGoldGrad)"
+          strokeWidth="3.2"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          fill="none"
+        />
+
+        {/* 4. Fierce Brow Lines sweeping across the eyes down to beak point */}
+        <path
+          d="M 27 34 C 33 44 42 52 50 53 C 58 52 67 44 73 34"
+          stroke="url(#owlGoldGrad)"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+          fill="none"
+        />
+
+        {/* 5. Left Eye (Circular Eye Ring + Inner Iris) */}
+        <circle
+          cx="43"
+          cy="50.5"
+          r="6.2"
+          stroke="url(#owlGoldGrad)"
+          strokeWidth="2.8"
+        />
+        <circle
+          cx="43"
+          cy="50.5"
+          r="2.8"
+          fill="url(#owlGoldGrad)"
+        />
+
+        {/* 6. Right Eye (Circular Eye Ring + Inner Iris) */}
+        <circle
+          cx="57"
+          cy="50.5"
+          r="6.2"
+          stroke="url(#owlGoldGrad)"
+          strokeWidth="2.8"
+        />
+        <circle
+          cx="57"
+          cy="50.5"
+          r="2.8"
+          fill="url(#owlGoldGrad)"
+        />
+
+        {/* 7. Beak & Downward Bib (V-shaped point down to bottom tip) */}
+        <path
+          d="M 43 51 L 50 78 L 57 51"
+          stroke="url(#owlGoldGrad)"
+          strokeWidth="3.2"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          fill="none"
+        />
+      </g>
+    </svg>
+  );
+
+  // Icon Variant
   if (variant === 'icon') {
+    if (showBackground) {
+      return (
+        <div
+          className={`flex items-center justify-center rounded-2xl bg-[#1b1730] dark:bg-[#120f24] shadow-md border border-amber-500/20 ${className}`}
+          style={{ width: size, height: size }}
+        >
+          {renderOwlSvg(size * 0.78)}
+        </div>
+      );
+    }
     return (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 100 100"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className={`shrink-0 select-none ${className}`}
-      >
-        {/* Background / glow if needed */}
-        {/* Outer track: top bar, 180° rounded turn, bottom bar */}
-        <path
-          d="M 38 12 H 62 C 80 12 94 26 94 44 C 94 62 80 76 62 76 H 38"
-          stroke="#122b64"
-          strokeWidth="7"
-          strokeLinecap="square"
-          fill="none"
-        />
-
-        {/* Inner parallel track */}
-        <path
-          d="M 22 22 H 62 C 74 22 84 32 84 44 C 84 56 74 66 62 66 H 38"
-          stroke="#122b64"
-          strokeWidth="7"
-          strokeLinecap="square"
-          fill="none"
-        />
-
-        {/* Pixel blocks on inner track return */}
-        <rect x="22" y="58.5" width="7" height="7" fill="#48bce6" rx="0.5" />
-        <rect x="30" y="58.5" width="7" height="7" fill="#48bce6" rx="0.5" />
-
-        {/* Pixel blocks on outer track return */}
-        <rect x="3" y="68.5" width="7" height="7" fill="#48bce6" rx="0.5" />
-        <rect x="11.5" y="68.5" width="7" height="7" fill="#48bce6" rx="0.5" />
-      </svg>
+      <div className={`inline-flex items-center justify-center ${className}`}>
+        {renderOwlSvg(size)}
+      </div>
     );
   }
 
-  // Horizontal variant (Emblem + دُفعة | Dafah)
+  // Horizontal Variant (Emblem + Title)
   if (variant === 'horizontal') {
     return (
-      <div className={`inline-flex items-center gap-2 select-none ${className}`}>
-        <DafahLogo size={size} variant="icon" />
+      <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
+        <div className="w-10 h-10 rounded-xl bg-[#1b1730] dark:bg-[#120f24] flex items-center justify-center shadow-md border border-amber-500/30 shrink-0">
+          {renderOwlSvg(28)}
+        </div>
         <div className="flex flex-col text-right leading-tight">
-          <span className="font-black text-[#122b64] dark:text-[#9fd8e2] text-lg font-['Tajawal'] tracking-wide">
-            دُفـعـة
+          <span className="font-black text-[#d4af37] text-lg font-['Tajawal'] tracking-wide drop-shadow-sm">
+            تحدي المهارة
           </span>
-          <span className="font-serif text-[11px] text-[#122b64] dark:text-slate-300 tracking-wider font-bold -mt-0.5">
-            Dafah
+          <span className="text-[11px] text-amber-600/80 dark:text-amber-300/80 tracking-wider font-bold">
+            دُفـعـة · Dafah
           </span>
         </div>
       </div>
     );
   }
 
-  // Full vertical logo (Symbol + دُفعة + Dafah)
+  // Full Vertical Variant (Badge with Gold Owl + Gold Calligraphy)
   return (
     <div className={`flex flex-col items-center text-center select-none ${className}`}>
-      {/* Symbol */}
-      <svg
-        width={size * 1.1}
-        height={size}
-        viewBox="0 0 100 85"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="mb-1"
-      >
-        {/* Outer track */}
-        <path
-          d="M 38 10 H 62 C 81 10 95 24 95 43 C 95 62 81 76 62 76 H 38"
-          stroke="#122b64"
-          strokeWidth="7.5"
-          strokeLinecap="square"
-          fill="none"
-          className="stroke-[#122b64] dark:stroke-[#9fd8e2]"
-        />
-
-        {/* Inner parallel track */}
-        <path
-          d="M 22 21 H 62 C 74 21 84 31 84 43 C 84 55 74 65 62 65 H 38"
-          stroke="#122b64"
-          strokeWidth="7.5"
-          strokeLinecap="square"
-          fill="none"
-          className="stroke-[#122b64] dark:stroke-[#9fd8e2]"
-        />
-
-        {/* Pixel blocks on inner track return */}
-        <rect x="22" y="57" width="7" height="7.5" fill="#48bce6" rx="0.5" />
-        <rect x="30" y="57" width="7" height="7.5" fill="#48bce6" rx="0.5" />
-
-        {/* Pixel blocks on outer track return */}
-        <rect x="2" y="68" width="7" height="7.5" fill="#48bce6" rx="0.5" />
-        <rect x="10.5" y="68" width="7" height="7.5" fill="#48bce6" rx="0.5" />
-      </svg>
-
-      {/* Arabic Word "دُفعة" */}
-      <div className="text-2xl sm:text-3xl font-black text-[#122b64] dark:text-white font-['Tajawal'] tracking-tight">
-        دُفــعـة
+      {/* Owl Emblem with Navy/Purple Card Background */}
+      <div className="relative mb-2">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-b from-[#241f40] to-[#151228] p-3 flex items-center justify-center shadow-2xl border-2 border-amber-500/30 shadow-amber-500/10">
+          {renderOwlSvg(size || 72)}
+        </div>
       </div>
 
-      {/* English Word "Dafah" */}
-      <div className="text-sm sm:text-base font-serif font-bold text-[#122b64] dark:text-[#9fd8e2] tracking-wider mt-0.5">
+      {/* Title */}
+      <div className="text-xl sm:text-2xl font-black bg-gradient-to-r from-[#f7dc88] via-[#d4af37] to-[#aa7f1e] bg-clip-text text-transparent font-['Tajawal'] tracking-tight drop-shadow-sm">
+        دُفــعـة
+      </div>
+      <div className="text-xs sm:text-sm font-serif font-bold text-amber-600/80 dark:text-amber-300/80 tracking-widest uppercase mt-0.5">
         Dafah
       </div>
     </div>

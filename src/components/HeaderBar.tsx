@@ -57,7 +57,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       <div className="flex items-center justify-between gap-2 px-2 py-1">
         {/* Brand */}
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-2xl bg-white dark:bg-[#151a40] p-1 flex items-center justify-center shadow-md border border-slate-200/80 dark:border-slate-800">
+          <div className="w-10 h-10 rounded-2xl bg-[#1b1730] p-1 flex items-center justify-center shadow-md border border-amber-500/30">
             <DafahLogo size={32} variant="icon" />
           </div>
           <div className="flex flex-col text-right">

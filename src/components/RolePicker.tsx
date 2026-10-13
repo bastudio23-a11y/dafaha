@@ -19,9 +19,9 @@ export const RolePicker: React.FC<RolePickerProps> = ({
 }) => {
   return (
     <div className="max-w-md mx-auto py-6 px-4 text-center select-none">
-      {/* Dafah Logo Hero Badge */}
+      {/* Golden Owl Logo Hero Badge */}
       <div className="relative inline-block mb-4">
-        <div className="px-6 py-5 bg-white dark:bg-[#151a40] rounded-3xl shadow-xl border-2 border-slate-100 dark:border-slate-800 transition-all hover:scale-105">
+        <div className="px-6 py-5 bg-[#1b1730] dark:bg-[#120f24] rounded-3xl shadow-2xl border-2 border-amber-500/30 transition-all hover:scale-105">
           <DafahLogo size={70} variant="full" />
         </div>
       </div>
