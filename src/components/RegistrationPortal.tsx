@@ -197,7 +197,7 @@ export const RegistrationPortal: React.FC<RegistrationPortalProps> = ({
     <div className="max-w-md mx-auto py-4 px-4 select-none text-center animate-fade">
       {/* Brand mark */}
       <div className="mb-3">
-        <div className="inline-block p-3 bg-[#1b1730] dark:bg-[#120f24] rounded-2xl shadow-md border border-amber-500/30">
+        <div className="inline-block p-3 bg-white dark:bg-[#151a40] rounded-2xl shadow-md border border-slate-100 dark:border-slate-800">
           <DafahLogo size={48} variant="full" />
         </div>
       </div>

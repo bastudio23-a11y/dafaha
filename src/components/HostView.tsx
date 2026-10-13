@@ -151,7 +151,7 @@ export const HostView: React.FC<HostViewProps> = ({
     return (
       <div className="max-w-4xl mx-auto py-2 px-2 select-none">
         <div className="text-center mb-6">
-          <div className="inline-block p-4 sm:p-5 bg-[#1b1730] dark:bg-[#120f24] rounded-3xl shadow-xl border-2 border-amber-500/30 mb-3 hover:scale-105 transition-transform">
+          <div className="inline-block p-4 sm:p-5 bg-white dark:bg-[#151a40] rounded-3xl shadow-xl border-2 border-slate-100 dark:border-slate-800 mb-3 hover:scale-105 transition-transform">
             <DafahLogo size={62} variant="full" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-black mb-1.5 bg-gradient-to-r from-[#122b64] via-[#2fa3bf] to-[#4eaab8] dark:from-[#9fd8e2] dark:to-white bg-clip-text text-transparent">
