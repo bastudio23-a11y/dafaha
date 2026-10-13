@@ -22,7 +22,7 @@ import type {
   QuestionRound,
 } from '../types.ts';
 
-const ROOM_ID = 'main_room';
+import { getActiveRoomId } from '../utils/room.ts';
 
 export class FirestoreSyncService {
   private unsubState: (() => void) | null = null;
@@ -40,12 +40,12 @@ export class FirestoreSyncService {
     leaderboard?: LeaderboardEntry[];
     registrations?: PlayerRegistration[];
   }) => void) {
-    const gameDocRef = doc(db, 'games', ROOM_ID);
-    const playersColRef = collection(db, 'games', ROOM_ID, 'players');
-    const audienceColRef = collection(db, 'games', ROOM_ID, 'audience');
-    const votesColRef = collection(db, 'games', ROOM_ID, 'votes');
-    const leaderboardColRef = collection(db, 'games', ROOM_ID, 'leaderboard');
-    const registrationsColRef = collection(db, 'games', ROOM_ID, 'registrations');
+    const gameDocRef = doc(db, 'games', getActiveRoomId());
+    const playersColRef = collection(db, 'games', getActiveRoomId(), 'players');
+    const audienceColRef = collection(db, 'games', getActiveRoomId(), 'audience');
+    const votesColRef = collection(db, 'games', getActiveRoomId(), 'votes');
+    const leaderboardColRef = collection(db, 'games', getActiveRoomId(), 'leaderboard');
+    const registrationsColRef = collection(db, 'games', getActiveRoomId(), 'registrations');
 
     // 1. Game State Listener
     this.unsubState = onSnapshot(
@@ -57,7 +57,7 @@ export class FirestoreSyncService {
       },
       (error) => {
         try {
-          handleFirestoreError(error, OperationType.GET, `games/${ROOM_ID}`);
+          handleFirestoreError(error, OperationType.GET, `games/${getActiveRoomId()}`);
         } catch {
           // Handled and logged
         }
@@ -73,7 +73,7 @@ export class FirestoreSyncService {
       },
       (error) => {
         try {
-          handleFirestoreError(error, OperationType.LIST, `games/${ROOM_ID}/players`);
+          handleFirestoreError(error, OperationType.LIST, `games/${getActiveRoomId()}/players`);
         } catch {
           // Handled and logged
         }
@@ -89,7 +89,7 @@ export class FirestoreSyncService {
       },
       (error) => {
         try {
-          handleFirestoreError(error, OperationType.LIST, `games/${ROOM_ID}/audience`);
+          handleFirestoreError(error, OperationType.LIST, `games/${getActiveRoomId()}/audience`);
         } catch {
           // Handled and logged
         }
@@ -105,7 +105,7 @@ export class FirestoreSyncService {
       },
       (error) => {
         try {
-          handleFirestoreError(error, OperationType.LIST, `games/${ROOM_ID}/votes`);
+          handleFirestoreError(error, OperationType.LIST, `games/${getActiveRoomId()}/votes`);
         } catch {
           // Handled and logged
         }
@@ -121,7 +121,7 @@ export class FirestoreSyncService {
       },
       (error) => {
         try {
-          handleFirestoreError(error, OperationType.LIST, `games/${ROOM_ID}/leaderboard`);
+          handleFirestoreError(error, OperationType.LIST, `games/${getActiveRoomId()}/leaderboard`);
         } catch {
           // Handled and logged
         }
@@ -137,7 +137,7 @@ export class FirestoreSyncService {
       },
       (error) => {
         try {
-          handleFirestoreError(error, OperationType.LIST, `games/${ROOM_ID}/registrations`);
+          handleFirestoreError(error, OperationType.LIST, `games/${getActiveRoomId()}/registrations`);
         } catch {
           // Handled and logged
         }
@@ -156,9 +156,9 @@ export class FirestoreSyncService {
 
   // Registration for entry before entering the game
   public async registerPlayer(reg: PlayerRegistration) {
-    const path = `games/${ROOM_ID}/registrations/${reg.id}`;
+    const path = `games/${getActiveRoomId()}/registrations/${reg.id}`;
     try {
-      await setDoc(doc(db, 'games', ROOM_ID, 'registrations', reg.id), {
+      await setDoc(doc(db, 'games', getActiveRoomId(), 'registrations', reg.id), {
         id: reg.id,
         name: String(reg.name || 'لاعب جديد').slice(0, 40),
         av: (reg.av || 0) % 8,
@@ -175,11 +175,11 @@ export class FirestoreSyncService {
   public async approveRegistration(reg: PlayerRegistration, assignedSide?: ChallengerSide) {
     try {
       const batch = writeBatch(db);
-      const regRef = doc(db, 'games', ROOM_ID, 'registrations', reg.id);
+      const regRef = doc(db, 'games', getActiveRoomId(), 'registrations', reg.id);
       batch.set(regRef, { ...reg, status: 'approved' }, { merge: true });
 
       if (reg.role === 'audience') {
-        const audRef = doc(db, 'games', ROOM_ID, 'audience', reg.id);
+        const audRef = doc(db, 'games', getActiveRoomId(), 'audience', reg.id);
         batch.set(
           audRef,
           {
@@ -196,7 +196,7 @@ export class FirestoreSyncService {
         );
       } else {
         const chosenSide = assignedSide || reg.side || 'r';
-        const playerRef = doc(db, 'games', ROOM_ID, 'players', reg.id);
+        const playerRef = doc(db, 'games', getActiveRoomId(), 'players', reg.id);
         batch.set(playerRef, {
           id: reg.id,
           name: reg.name,
@@ -215,14 +215,14 @@ export class FirestoreSyncService {
   public async rejectRegistration(regId: string, role?: string) {
     try {
       const batch = writeBatch(db);
-      const regRef = doc(db, 'games', ROOM_ID, 'registrations', regId);
+      const regRef = doc(db, 'games', getActiveRoomId(), 'registrations', regId);
       batch.delete(regRef);
 
       if (role === 'challenger') {
-        const pRef = doc(db, 'games', ROOM_ID, 'players', regId);
+        const pRef = doc(db, 'games', getActiveRoomId(), 'players', regId);
         batch.delete(pRef);
       } else {
-        const aRef = doc(db, 'games', ROOM_ID, 'audience', regId);
+        const aRef = doc(db, 'games', getActiveRoomId(), 'audience', regId);
         batch.delete(aRef);
       }
 
@@ -239,7 +239,7 @@ export class FirestoreSyncService {
       let hasLeft = currentChallengers.some((p) => p.side === 'l');
 
       for (const reg of pendingList) {
-        const regRef = doc(db, 'games', ROOM_ID, 'registrations', reg.id);
+        const regRef = doc(db, 'games', getActiveRoomId(), 'registrations', reg.id);
         batch.set(regRef, { ...reg, status: 'approved' }, { merge: true });
 
         if (reg.role === 'challenger') {
@@ -254,7 +254,7 @@ export class FirestoreSyncService {
             // Already 2 challengers, assign as audience
             side = 'r';
           }
-          const pRef = doc(db, 'games', ROOM_ID, 'players', reg.id);
+          const pRef = doc(db, 'games', getActiveRoomId(), 'players', reg.id);
           batch.set(pRef, {
             id: reg.id,
             name: reg.name,
@@ -263,7 +263,7 @@ export class FirestoreSyncService {
             t: Date.now(),
           });
         } else {
-          const aRef = doc(db, 'games', ROOM_ID, 'audience', reg.id);
+          const aRef = doc(db, 'games', getActiveRoomId(), 'audience', reg.id);
           batch.set(
             aRef,
             {
@@ -289,9 +289,9 @@ export class FirestoreSyncService {
 
   // Actions
   public async joinPlayer(id: string, name: string, side: ChallengerSide, av: number) {
-    const path = `games/${ROOM_ID}/players/${id}`;
+    const path = `games/${getActiveRoomId()}/players/${id}`;
     try {
-      await setDoc(doc(db, 'games', ROOM_ID, 'players', id), {
+      await setDoc(doc(db, 'games', getActiveRoomId(), 'players', id), {
         id,
         name: String(name || 'متحدّي').slice(0, 30),
         side,
@@ -304,10 +304,10 @@ export class FirestoreSyncService {
   }
 
   public async joinAudience(id: string, name: string, av: number) {
-    const path = `games/${ROOM_ID}/audience/${id}`;
+    const path = `games/${getActiveRoomId()}/audience/${id}`;
     try {
       await setDoc(
-        doc(db, 'games', ROOM_ID, 'audience', id),
+        doc(db, 'games', getActiveRoomId(), 'audience', id),
         {
           id,
           name: String(name || 'ضيف').slice(0, 30),
@@ -326,9 +326,9 @@ export class FirestoreSyncService {
   }
 
   public async vote(uid: string, round: number, a: number | null, b: number | null) {
-    const path = `games/${ROOM_ID}/votes/${uid}`;
+    const path = `games/${getActiveRoomId()}/votes/${uid}`;
     try {
-      await setDoc(doc(db, 'games', ROOM_ID, 'votes', uid), {
+      await setDoc(doc(db, 'games', getActiveRoomId(), 'votes', uid), {
         uid,
         r: round,
         a: a ?? -1,
@@ -366,7 +366,7 @@ export class FirestoreSyncService {
     };
 
     await this.clearVotes();
-    await setDoc(doc(db, 'games', ROOM_ID), state);
+    await setDoc(doc(db, 'games', getActiveRoomId()), state);
   }
 
   public async nextRound(currentState: GameState) {
@@ -392,7 +392,7 @@ export class FirestoreSyncService {
     };
 
     await this.clearVotes();
-    await setDoc(doc(db, 'games', ROOM_ID), nextState);
+    await setDoc(doc(db, 'games', getActiveRoomId()), nextState);
   }
 
   public async setPhase(phase: GamePhase, duration?: number, currentState?: GameState) {
@@ -405,7 +405,7 @@ export class FirestoreSyncService {
       const d = duration || currentState.durationSeconds || 15;
       update.endsAt = Date.now() + d * 1000;
     }
-    await setDoc(doc(db, 'games', ROOM_ID), { ...currentState, ...update }, { merge: true });
+    await setDoc(doc(db, 'games', getActiveRoomId()), { ...currentState, ...update }, { merge: true });
   }
 
   public async finishRound(
@@ -474,7 +474,7 @@ export class FirestoreSyncService {
       updatedAudienceScores.push({ id: aud.id, points: newTotalPoints });
 
       // Update audience document in Firestore
-      const audRef = doc(db, 'games', ROOM_ID, 'audience', aud.id);
+      const audRef = doc(db, 'games', getActiveRoomId(), 'audience', aud.id);
       batch.set(
         audRef,
         {
@@ -489,7 +489,7 @@ export class FirestoreSyncService {
       );
 
       // Update leaderboard entry in Firestore
-      const lbRef = doc(db, 'games', ROOM_ID, 'leaderboard', `aud_${aud.id}`);
+      const lbRef = doc(db, 'games', getActiveRoomId(), 'leaderboard', `aud_${aud.id}`);
       batch.set(
         lbRef,
         {
@@ -511,7 +511,7 @@ export class FirestoreSyncService {
       const isWinner = win === idx;
       const cscore = sc[idx];
       const cid = `ch_${idx}`;
-      const lbRef = doc(db, 'games', ROOM_ID, 'leaderboard', cid);
+      const lbRef = doc(db, 'games', getActiveRoomId(), 'leaderboard', cid);
       const points = cscore * 40 + (isWinner ? 200 : 30);
 
       batch.set(
@@ -544,12 +544,12 @@ export class FirestoreSyncService {
       updatedAt: Date.now(),
     };
 
-    await setDoc(doc(db, 'games', ROOM_ID), resultsState);
+    await setDoc(doc(db, 'games', getActiveRoomId()), resultsState);
   }
 
   public async resetLeaderboard() {
     try {
-      const snap = await getDocs(collection(db, 'games', ROOM_ID, 'leaderboard'));
+      const snap = await getDocs(collection(db, 'games', getActiveRoomId(), 'leaderboard'));
       const batch = writeBatch(db);
       snap.docs.forEach((d) => batch.delete(d.ref));
       await batch.commit();
@@ -560,7 +560,7 @@ export class FirestoreSyncService {
 
   public async resetPlayers() {
     try {
-      const snap = await getDocs(collection(db, 'games', ROOM_ID, 'players'));
+      const snap = await getDocs(collection(db, 'games', getActiveRoomId(), 'players'));
       const batch = writeBatch(db);
       snap.docs.forEach((d) => batch.delete(d.ref));
       await batch.commit();
@@ -572,13 +572,13 @@ export class FirestoreSyncService {
   /** Clear challengers and return to lobby so new players can register via QR. */
   public async swapChallengers(currentState: GameState) {
     try {
-      const snap = await getDocs(collection(db, 'games', ROOM_ID, 'players'));
+      const snap = await getDocs(collection(db, 'games', getActiveRoomId(), 'players'));
       const batch = writeBatch(db);
       snap.docs.forEach((d) => batch.delete(d.ref));
       await batch.commit();
       await this.clearVotes();
 
-      await setDoc(doc(db, 'games', ROOM_ID), {
+      await setDoc(doc(db, 'games', getActiveRoomId()), {
         ...currentState,
         phase: 'lobby',
         round: 0,
@@ -613,12 +613,12 @@ export class FirestoreSyncService {
       updatedAt: Date.now(),
     };
     await this.clearVotes();
-    await setDoc(doc(db, 'games', ROOM_ID), defaultState);
+    await setDoc(doc(db, 'games', getActiveRoomId()), defaultState);
   }
 
   private async clearVotes() {
     try {
-      const snap = await getDocs(collection(db, 'games', ROOM_ID, 'votes'));
+      const snap = await getDocs(collection(db, 'games', getActiveRoomId(), 'votes'));
       const batch = writeBatch(db);
       snap.docs.forEach((d) => batch.delete(d.ref));
       await batch.commit();

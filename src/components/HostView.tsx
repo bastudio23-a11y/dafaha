@@ -27,6 +27,7 @@ import { QRCodeDisplay } from './QRCodeDisplay.tsx';
 import { CircularTimer } from './CircularTimer.tsx';
 import { DafahLogo } from './DafahLogo.tsx';
 import { sound } from '../utils/audio.ts';
+import { getActiveRoomId } from '../utils/room.ts';
 import type {
   GameState,
   Player,
@@ -92,16 +93,27 @@ export const HostView: React.FC<HostViewProps> = ({
   useEffect(() => {
     try {
       const base = window.location.origin + window.location.pathname;
+      const roomId = getActiveRoomId();
+
       const regUrl = new URL(base);
       regUrl.searchParams.set('page', 'register');
+      if (roomId && roomId !== 'main_room') {
+        regUrl.searchParams.set('room', roomId);
+      }
       setRegisterUrl(regUrl.toString());
 
       const cUrl = new URL(base);
       cUrl.searchParams.set('role', 'challenger');
+      if (roomId && roomId !== 'main_room') {
+        cUrl.searchParams.set('room', roomId);
+      }
       setChallengerUrl(cUrl.toString());
 
       const aUrl = new URL(base);
       aUrl.searchParams.set('role', 'audience');
+      if (roomId && roomId !== 'main_room') {
+        aUrl.searchParams.set('room', roomId);
+      }
       setAudienceUrl(aUrl.toString());
     } catch {
       // fallback

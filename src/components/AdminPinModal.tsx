@@ -40,7 +40,7 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
         const next = pin + digit;
         setPin(next);
         const stored = getStoredPin();
-        if (next === '12345' || next === stored) {
+        if (next === stored) {
           verifyPin(next);
         } else if (next.length === 5) {
           verifyPin(next);
@@ -61,7 +61,7 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
 
   const verifyPin = (entered: string) => {
     const correctPin = getStoredPin();
-    if (entered === correctPin || entered === '12345') {
+    if (entered === correctPin) {
       sound.playVictory();
       try {
         sessionStorage.setItem('host_pin_verified', 'true');

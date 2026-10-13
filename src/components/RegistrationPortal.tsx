@@ -54,7 +54,9 @@ export const RegistrationPortal: React.FC<RegistrationPortalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     sound.playClick();
-    const finalName = name.trim() || 'لاعب جديد';
+    const finalName = (name.trim() || 'لاعب جديد')
+      .replace(/[<>{}\/\\`]/g, '')
+      .slice(0, 24);
     try {
       localStorage.setItem('player_reg_name', finalName);
       localStorage.setItem('player_reg_av', String(selectedAv));

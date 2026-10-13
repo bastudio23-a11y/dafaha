@@ -11,6 +11,7 @@ import type {
 } from '../types.ts';
 import { DEFAULT_SKILL_POOL, shuffleArray } from '../data/skills.ts';
 import { firestoreSync } from '../services/firestoreSync.ts';
+import { getActiveRoomId } from '../utils/room.ts';
 
 const DEFAULT_STATE: GameState = {
   phase: 'lobby',
@@ -75,7 +76,8 @@ export function useGameSync(uid: string) {
     }
 
     try {
-      const bc = new BroadcastChannel('skill_challenge_bus');
+      const roomId = getActiveRoomId();
+      const bc = new BroadcastChannel(`skill_challenge_bus_${roomId}`);
       bcRef.current = bc;
       bc.onmessage = (event) => {
         if (event.data?.type === 'SYNC') {
