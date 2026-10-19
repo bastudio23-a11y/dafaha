@@ -7,6 +7,7 @@ const app = express();
 app.use(express.json());
 registerMultiplayerRoutes(app);
 const server = app.listen(0, '127.0.0.1');
+await new Promise(resolve => server.once('listening', resolve));
 const base = 'http://127.0.0.1:' + server.address().port;
 after(() => server.close());
 beforeEach(() => resetRoomsForTests());
