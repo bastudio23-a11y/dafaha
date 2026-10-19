@@ -96,7 +96,7 @@ export const HostView: React.FC<HostViewProps> = ({
       const roomId = getActiveRoomId();
 
       const regUrl = new URL(base);
-      regUrl.searchParams.set('page', 'register');
+      // The room link opens role selection for guests.
       if (roomId && roomId !== 'main_room') {
         regUrl.searchParams.set('room', roomId);
       }
@@ -170,7 +170,7 @@ export const HostView: React.FC<HostViewProps> = ({
             مين المتحدّيين اليوم؟
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm max-w-lg mx-auto">
-            امسحوا الباركود للتسجيل، وسيظهر كل اسم في لوحة الأدمن لتأكيد دخوله للعبة!
+            امسحوا الباركود للانضمام؛ الجمهور يدخل مباشرة، والمتحدّون ينتظرون موافقة المضيف.
           </p>
         </div>
 
@@ -192,7 +192,7 @@ export const HostView: React.FC<HostViewProps> = ({
                       </span>
                     </h2>
                     <p className="text-xs text-slate-400">
-                      يمكنك تأكيد اللاعبين لدخول اللعبة أو حذف أي شخص
+                      يمكنك قبول طلبات المتحدّين أو رفضها قبل بدء الجولة
                     </p>
                   </div>
                 </div>
@@ -396,14 +396,14 @@ export const HostView: React.FC<HostViewProps> = ({
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed max-w-md">
                 وجّه كاميرا جوالك إلى الباركود، اكتب اسمك واختر صورتك ودورك (متحدّي أو جمهور).
-                ستصل أسماؤكم إلى شاشة الأدمن هنا لتأكيد دخولكم أو حذف أي شخص!
+                الجمهور يدخل مباشرة، والمتحدّون ينتظرون موافقة المضيف قبل اللعب.
               </p>
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     sound.playClick();
-                    const urlToCopy = registerUrl || `${window.location.origin}${window.location.pathname}?page=register`;
+                    const urlToCopy = registerUrl || window.location.href;
                     try {
                       navigator.clipboard.writeText(urlToCopy);
                     } catch {
