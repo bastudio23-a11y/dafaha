@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Users,
   Ear,
@@ -62,8 +62,14 @@ export const AudienceView: React.FC<AudienceViewProps> = ({
 
   const me = audience.find((a) => a.id === uid);
 
-  const [localVoteA, setLocalVoteA] = useState<number | null>(myVote?.a ?? null);
-  const [localVoteB, setLocalVoteB] = useState<number | null>(myVote?.b ?? null);
+  const [localVoteA, setLocalVoteA] = useState<number | null>(myVote && myVote.a >= 0 ? myVote.a : null);
+  const [localVoteB, setLocalVoteB] = useState<number | null>(myVote && myVote.b >= 0 ? myVote.b : null);
+
+  // Reset local choices for each new round and restore acknowledged votes on reload.
+  useEffect(() => {
+    setLocalVoteA(myVote && myVote.a >= 0 ? myVote.a : null);
+    setLocalVoteB(myVote && myVote.b >= 0 ? myVote.b : null);
+  }, [state.round, myVote?.a, myVote?.b]);
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();

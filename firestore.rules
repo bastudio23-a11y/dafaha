@@ -1,75 +1,16 @@
 rules_version = '2';
 
+// Dafaha's new multiplayer sessions are handled by the authenticated
+// Render room API, not by client-side Firestore writes. This disables
+// insecure legacy room mutations after the rules are explicitly deployed.
+//
+// IMPORTANT: Deploy only after confirming this Firebase database is
+// dedicated to Dafaha and the current Render version is active.
+// Updating this repository file does NOT deploy Firestore rules.
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
-    }
-
-    // Default deny catch-all
     match /{document=**} {
       allow read, write: if false;
-    }
-
-    // Connection test doc
-    match /test/connection {
-      allow read: if true;
-    }
-
-    // Games collection
-    match /games/{gameId} {
-      allow get: if isValidId(gameId);
-      allow list: if true;
-      allow create, update: if isValidId(gameId)
-        && request.resource.data.phase in ['lobby', 'secret', 'explain', 'vote', 'results']
-        && request.resource.data.round is number;
-      allow delete: if false;
-
-      // Audience subcollection
-      match /audience/{audienceId} {
-        allow get, list: if isValidId(gameId);
-        allow create, update: if isValidId(gameId) && isValidId(audienceId)
-          && request.resource.data.name is string
-          && request.resource.data.name.size() <= 40;
-        allow delete: if isValidId(gameId);
-      }
-
-      // Players / Challengers subcollection
-      match /players/{playerId} {
-        allow get, list: if isValidId(gameId);
-        allow create, update: if isValidId(gameId) && isValidId(playerId)
-          && request.resource.data.name is string
-          && request.resource.data.name.size() <= 40
-          && request.resource.data.side in ['r', 'l'];
-        allow delete: if isValidId(gameId);
-      }
-
-      // Votes subcollection
-      match /votes/{voteId} {
-        allow get, list: if isValidId(gameId);
-        allow create, update: if isValidId(gameId) && isValidId(voteId)
-          && request.resource.data.round is number;
-        allow delete: if isValidId(gameId);
-      }
-
-      // Leaderboard subcollection
-      match /leaderboard/{entryId} {
-        allow get, list: if isValidId(gameId);
-        allow create, update: if isValidId(gameId) && isValidId(entryId)
-          && request.resource.data.name is string
-          && request.resource.data.points is number;
-        allow delete: if isValidId(gameId);
-      }
-
-      // Registrations & approvals subcollection
-      match /registrations/{regId} {
-        allow get, list: if isValidId(gameId);
-        allow create, update: if isValidId(gameId) && isValidId(regId)
-          && request.resource.data.name is string
-          && request.resource.data.name.size() <= 40;
-        allow delete: if isValidId(gameId);
-      }
     }
   }
 }
