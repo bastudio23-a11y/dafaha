@@ -16,6 +16,7 @@ const COOKIE = 'dafaha_sid';
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const rooms = new Map<string, Room>();
 const limits = new Map<string, { count: number; until: number }>();
+const actionLimits = new Map<string, { count: number; until: number }>();
 const codePattern = /^[A-HJ-NP-Z2-9]{8}$/;
 const TTL = 6 * 60 * 60 * 1000;
 const defaultGame = (): GameState => ({
@@ -56,6 +57,15 @@ function guardRate(req: Request, res: Response) {
   res.status(429).json({ error: 'طلبات كثيرة، حاول بعد قليل' });
   return false;
 }
+function guardAction(req: Request, res: Response) {
+  const key = cookieToken(req);
+  const now = Date.now();
+  const slot = actionLimits.get(key);
+  if (!slot || now >= slot.until) { actionLimits.set(key, { count: 1, until: now + 60000 }); return true; }
+  if (++slot.count <= 180) return true;
+  res.status(429).json({ error: 'طلبات كثيرة من هذا اللاعب، حاول بعد قليل' });
+  return false;
+}
 function prune() {
   const now = Date.now();
   for (const [id, room] of rooms) if (now - room.updatedAt > TTL) {
@@ -63,6 +73,7 @@ function prune() {
     rooms.delete(id);
   }
   for (const [ip, slot] of limits) if (slot.until < now) limits.delete(ip);
+  for (const [key, slot] of actionLimits) if (slot.until < now) actionLimits.delete(key);
 }
 function roomFrom(req: Request, res: Response) {
   prune();
@@ -334,7 +345,7 @@ export function registerMultiplayerRoutes(app: Express) {
   app.post('/api/rooms/:code/action', (req, res) => {
     if (!guardOrigin(req, res)) return;
     const pair = requireSession(req, res);
-    if (!pair) return;
+    if (!pair || !guardAction(req, res)) return;
     const action = req.body?.action;
     if (typeof action !== 'string') return res.status(400).json({ error: 'إجراء غير صالح' });
     const error = act(pair.room, pair.session, action, req.body?.payload);
@@ -345,5 +356,5 @@ export function registerMultiplayerRoutes(app: Express) {
 }
 export function resetRoomsForTests() {
   for (const room of rooms.values()) for (const listener of room.listeners) listener.res.end();
-  rooms.clear(); limits.clear();
+  rooms.clear(); limits.clear(); actionLimits.clear();
 }
