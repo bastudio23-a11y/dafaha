@@ -100,3 +100,14 @@ test('rejects invalid names, forged origin, and unauthorized session', async () 
   assert.equal((await action(room, '', 'resetGame')).status, 401);
   assert.equal((await action(room, host.cookie, 'arbitraryAction')).status, 403);
 });
+
+
+test('accepts a workshop-size audience using a shared network address', async () => {
+  const host = await create('ورشة جامعية');
+  for (let i = 0; i < 45; i++) {
+    const guest = await join(host.data.roomId, 'طالب ' + i, 'audience');
+    assert.equal(guest.status, 200, 'audience join ' + i);
+  }
+  const snapshot = await state(host.data.roomId, host.cookie);
+  assert.equal(snapshot.data.audience.length, 45);
+});
