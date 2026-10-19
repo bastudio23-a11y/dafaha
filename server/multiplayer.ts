@@ -48,12 +48,13 @@ function guardOrigin(req: Request, res: Response) {
   res.status(403).json({ error: 'مصدر الطلب غير مسموح' });
   return false;
 }
-function guardRate(req: Request, res: Response) {
-  const ip = String(req.ip || req.socket.remoteAddress || 'unknown');
+function guardRate(req: Request, res: Response, kind: 'create' | 'join') {
+  const ip = kind + ':' + String(req.ip || req.socket.remoteAddress || 'unknown');
+  const max = kind === 'create' ? 10 : 180;
   const now = Date.now();
   const slot = limits.get(ip);
   if (!slot || now >= slot.until) { limits.set(ip, { count: 1, until: now + 300000 }); return true; }
-  if (++slot.count <= 35) return true;
+  if (++slot.count <= max) return true;
   res.status(429).json({ error: 'طلبات كثيرة، حاول بعد قليل' });
   return false;
 }
@@ -281,7 +282,7 @@ function act(room: Room, session: Session, action: string, data: any): string | 
 }
 export function registerMultiplayerRoutes(app: Express) {
   app.post('/api/rooms', (req, res) => {
-    if (!guardOrigin(req, res) || !guardRate(req, res)) return;
+    if (!guardOrigin(req, res) || !guardRate(req, res, 'create')) return;
     prune();
     if (rooms.size >= 300) return res.status(503).json({ error: 'الغرف ممتلئة مؤقتاً' });
     let id = generateCode();
@@ -301,7 +302,7 @@ export function registerMultiplayerRoutes(app: Express) {
       audienceCount: room.audience.length, challengerCount: room.players.length });
   });
   app.post('/api/rooms/:code/join', (req, res) => {
-    if (!guardOrigin(req, res) || !guardRate(req, res)) return;
+    if (!guardOrigin(req, res) || !guardRate(req, res, 'join')) return;
     const room = roomFrom(req, res);
     if (!room) return;
     const old = getSession(room, req);
