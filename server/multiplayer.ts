@@ -127,9 +127,9 @@ function finishRound(room: Room) {
   const sc: [number, number] = [tally.t0[state.cur[0].ans], tally.t1[state.cur[1].ans]];
   const winner = sc[0] === sc[1] ? -1 : sc[0] > sc[1] ? 0 : 1;
   const wins: [number, number] = [...state.wins] as [number, number];
-  if (winner >= 0) wins[winner]++;
+  if (winner === 0) wins[0]++; else if (winner === 1) wins[1]++;
   room.state = { ...state, phase: 'results', tally, sc, win: winner, wins,
-    msg: winner < 0 ? 'تعادل رائع!' : 'فاز ' + state.names[winner] + '! جمهوره عرف المهارة أكثر ⭐' };
+    msg: winner < 0 ? 'تعادل رائع!' : 'فاز ' + state.names[winner === 0 ? 0 : 1] + '! جمهوره عرف المهارة أكثر ⭐' };
   for (let side = 0; side < 2; side++) {
     const player = room.players.find(p => p.side === (side === 0 ? 'r' : 'l'));
     const id = player?.id || 'local_' + side;
@@ -217,7 +217,7 @@ function act(room: Room, session: Session, action: string, data: any): string | 
     case 'swapChallengers':
       room.players = [];
       room.registrations = room.registrations.map(r => ({ ...r, status: 'rejected' }));
-      room.votes = []; room.manual = [[0, 0, 0, 0]];
+      room.votes = []; room.manual = [[0, 0, 0, 0], [0, 0, 0, 0]];
       room.state = { ...defaultGame(), wins: state.wins };
       return;
     case 'start': {
@@ -264,7 +264,7 @@ function act(room: Room, session: Session, action: string, data: any): string | 
     case 'finishRound': return finishRound(room);
     case 'resetLeaderboard': room.leaderboard = []; return;
     case 'resetGame':
-      room.state = defaultGame(); room.votes = []; room.manual = [[0, 0, 0, 0]]; return;
+      room.state = defaultGame(); room.votes = []; room.manual = [[0, 0, 0, 0], [0, 0, 0, 0]]; return;
     default: return 'إجراء غير معروف';
   }
 }
