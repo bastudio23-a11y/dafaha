@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, Copy, Gamepad2, LogIn, Plus, Users, Mic } from 'lucide-react';
 import { DafahLogo } from './DafahLogo.tsx';
-import { createRoom, goToRoom, joinRoom, loadRoomMeta, normalizeRoomCode } from '../services/roomAccess.ts';
+import { CODE_RE, createRoom, goToRoom, joinRoom, loadRoomMeta, normalizeRoomCode } from '../services/roomAccess.ts';
 
 interface Props { code: string }
 export function RoomGateway({ code }: Props) {
@@ -36,6 +36,7 @@ export function RoomGateway({ code }: Props) {
     try {
       const normalized = normalizeRoomCode(roomCode);
       if (!code) {
+        if (!CODE_RE.test(normalized)) throw new Error('رمز الغرفة غير صالح');
         // Entering a code on the homepage opens the join screen first.
         goToRoom(normalized);
         return;
